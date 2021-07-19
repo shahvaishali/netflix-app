@@ -1,25 +1,40 @@
-import logo from './logo.svg';
 import './App.css';
+import List from './components/List';
+import React, { useState, useEffect } from 'react'
+import image from './img/NetflixLogo.png'
 
-function App() {
+function App(props) {
+
+  useEffect(() => {
+    fetch('http://localhost:8000/mylist')
+      .then(response => response.json())
+      .then(setList)
+    fetch('http://localhost:8000/recommendations')
+      .then(response => response.json())
+      .then(setRecommendations)
+  }, [])
+
+  const [list, setList] = useState([])
+  const [recommendations, setRecommendations] = useState([])
+
+  function removeList(movie) {
+    setRecommendations([...recommendations, movie])
+    const updateList = list.filter((item) => item.id !== movie.id);
+    setList(updateList)
+  }
+
+  function addtoList(movie) {
+    setList([...list, movie])
+    const recommededList = recommendations.filter((item) => item.id !== movie.id)
+    setRecommendations(recommededList)
+  }
+
   return (
-    <div className="App">
-      <header className="App-header">
-        <img src={logo} className="App-logo" alt="logo" />
-        <p>
-          Edit <code>src/App.js</code> and save to reload.
-        </p>
-        <a
-          className="App-link"
-          href="https://reactjs.org"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          Learn React
-        </a>
-      </header>
-    </div>
+    <>
+      <img src={image} alt="Netflix Logo" className="logo"></img>
+      <List name="My List" list={list} handleClick={removeList} buttonText="Remove"/>
+      <List name="Recommended List" list={recommendations} handleClick={addtoList} buttonText="Add" />
+    </>
   );
 }
-
 export default App;
